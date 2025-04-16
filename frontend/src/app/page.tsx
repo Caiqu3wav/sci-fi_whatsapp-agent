@@ -1,10 +1,11 @@
 import Header from "./components/sections/Header"
-import Bg from '../../public/assets/img/purpe-sci-fi_bg.png'
+import Hero from "./components/sections/Hero"
 
 export default function Home() {
   return (
-    <main className="h-[800px] bg-gradient-to-b from-black to-purple-800">
+    <main className="min-h-[600px] flex flex-col items-center justify-around">
       <Header/>
+      <Hero/>
     </main>
   )
 }

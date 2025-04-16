@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-main{
+.hero{
     background: url(../../public/assets/img/purpe-sci-fi_bg.png);
     background-size: cover;
     background-repeat: none;

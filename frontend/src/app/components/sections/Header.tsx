@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function Header() {
   return (
-    <header className='flex h-[120px] justify-between bg-gradient-to-b from-black to-transparent text-white px-3 items-center'>
+    <header className='flex w-full fixed top-0 left-0 z-50 h-[120px] justify-between bg-gradient-to-b from-black to-transparent text-white px-3 items-center'>
         <Image src={SciFiLogo} className='w-[80px]' alt='sci-fi logo' />
         <nav className='flex items-center justify-between w-[400px]'>
             <ul className='flex items-center justify-between w-[400px]'>
