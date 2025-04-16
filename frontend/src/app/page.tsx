@@ -1,4 +1,5 @@
 import Header from "./components/sections/Header"
+import Bg from '../../public/assets/img/purpe-sci-fi_bg.png'
 
 export default function Home() {
   return (
