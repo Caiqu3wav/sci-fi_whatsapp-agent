@@ -1,6 +1,7 @@
 import Header from "./components/sections/Header"
 import Hero from "./components/sections/Hero"
 import Recourses from "./components/sections/Recourses"
+import {Footer} from "./components/sections/Footer"
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       <Header/>
       <Hero/>
       <Recourses/>
+      <Footer/>
     </main>
   )
 }

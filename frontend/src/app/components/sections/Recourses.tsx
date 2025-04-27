@@ -7,28 +7,28 @@ export default function Recourses() {
     <section className="w-full recourses-bg py-20 px-4 md:px-8">
         <div className="max-w-6xl mx-auto flex flex-col gap-3">
           <h2 className="text-3xl md:text-4xl font-bold text-center mt-12 text-amber-50">
-            Recursos Poderosos
+            Powerfull Resources
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <FeatureCard 
               Icon={MessageSquare}
-              title="Respostas Automáticas"
-              description="Responda mensagens 24/7 com IA personalizada"
+              title="Automizated answers"
+              description="Answer 24/7 Messages with Personalized AI"
             />
             <FeatureCard
               Icon={Zap}
-              title="Fluxos Inteligentes"
-              description="Crie fluxos de conversação adaptáveis"
+              title="Smart flux"
+              description="Create adaptable conversation flows"
             />
             <FeatureCard
               Icon={Shield}
-              title="Segurança Total"
-              description="Seus dados protegidos com criptografia"
+              title="Total security"
+              description="Your data protected with encryption"
             />
             <FeatureCard
               Icon={Settings}
-              title="Personalização"
-              description="Configure seu agente como desejar"
+              title="Customization"
+              description="Configure your agent as desired"
             />
           </div>
         </div>

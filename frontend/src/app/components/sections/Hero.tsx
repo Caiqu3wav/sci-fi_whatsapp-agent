@@ -12,7 +12,7 @@ export default function Hero() {
   <p className='text-2xl text-gray-300 mb-6 max-w-2xl'>
     Automate conversations with clients on WhatsApp with an AI that responds using your business information.
   </p>
-  <button className='px-6 py-3 bg-purple-600 text-white font-semibold rounded-xl hover:bg-purple-700 transition'>
+  <button className='px-6 py-3 bg-primary-200 text-white font-semibold rounded-xl hover:bg-primary-50 transition'>
     Start Now
   </button>
 </div>

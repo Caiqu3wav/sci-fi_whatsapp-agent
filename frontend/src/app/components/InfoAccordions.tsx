@@ -12,11 +12,11 @@ import {
   const faqs = [
     {
       question: "First steps",
-      answer: "Entenda a visão geral do projeto e como ele vai te ajudar a automatizar o atendimento no WhatsApp com inteligência artificial.",
+      answer: "Understand the project's overview and how it will help you automate service on WhatsApp with artificial intelligence.",
     },
     {
       question: "Signup and add your business information",
-      answer: "Crie sua conta e adicione os dados da empresa para conectar à API oficial do WhatsApp (Meta).",
+      answer: "Create your account and add company data to connect to the official WhatsApp API.",
     },
     {
       question: "What is the AI used for?",
@@ -24,24 +24,24 @@ import {
     },
     {
       question: "How is data stored and protected?",
-      answer: "All data são armazenados com criptografia no banco PostgreSQL, com autenticação JWT e medidas de segurança padrão da indústria.",
+      answer: "They are stored with encryption in PostgreSQL bank, with JWT authentication and industry standard security measures.",
     },
     {
       question: "Can I customize the AI behavior?",
-      answer: "Sim! Você pode treinar sua IA com exemplos reais de conversas ou integrar modelos externos para personalização do comportamento.",
+      answer: "Yes! You can train your AI with real examples of conversations or integrate external models for customizing behavior.",
     },
     {
       question: "How do I monitor conversations in real time?",
-      answer: "A dashboard em Next.js mostra cada interação em tempo real com logs e filtros por cliente, intenção e status.",
+      answer: "Dashboard in Next.js shows each real -time interaction with logs and filters by client, intention and status.",
     },
     {
       question: "Is there a free trial or pricing plan?",
-      answer: "Oferecemos um período de teste gratuito e planos escaláveis baseados na quantidade de mensagens e recursos utilizados.",
+      answer: "We offer a free test period and scalable plans based on the amount of messages and features used.",
     },
   ];
   
   
-  export default function FAQSection() {
+  export default function InfoAccordions() {
     const [expanded, setExpanded] = useState<number | false>(false);
   
     const handleChange = (panel: number) => (_event: React.SyntheticEvent, isExpanded: boolean) => {

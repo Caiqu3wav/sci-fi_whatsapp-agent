@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme {
+    --color-primary-50: oklch(0.27 0.1113 306.68);
+    --color-primary-100: oklch(0.39 0.156 307.99);
+    --color-primary-200: oklch(0.5 0.2407 300.72);
+  }
+
 .hero{
     background: url(../../public/assets/img/purpe-sci-fi_bg.png);
     background-size: cover;
