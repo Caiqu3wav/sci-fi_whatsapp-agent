@@ -1,0 +1,60 @@
+import {
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Typography,
+  Container,
+} from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+
+const faqs = [
+  {
+    question: "First steps",
+    answer: "Entenda a visão geral do projeto e como ele vai te ajudar a automatizar o atendimento no WhatsApp com inteligência artificial.",
+  },
+  {
+    question: "Signup and add your business information",
+    answer: "Crie sua conta e adicione os dados da empresa para conectar à API oficial do WhatsApp (Meta).",
+  },
+  {
+    question: "How does the WhatsApp Agent work?",
+    answer: "O agente usa FastAPI no backend com PostgreSQL para armazenar dados e a API da Meta para enviar e receber mensagens em tempo real.",
+  },
+  {
+    question: "What is the AI used for?",
+    answer: "A IA entende as mensagens recebidas, classifica a intenção do cliente e responde automaticamente com base no histórico e nos dados salvos.",
+  },
+  {
+    question: "How is data stored and protected?",
+    answer: "Todos os dados são armazenados com criptografia no banco PostgreSQL, com autenticação JWT e medidas de segurança padrão da indústria.",
+  },
+  {
+    question: "Can I customize the AI behavior?",
+    answer: "Sim! Você pode treinar sua IA com exemplos reais de conversas ou integrar modelos externos para personalização do comportamento.",
+  },
+  {
+    question: "How do I monitor conversations in real time?",
+    answer: "A dashboard em Next.js mostra cada interação em tempo real com logs e filtros por cliente, intenção e status.",
+  },
+  {
+    question: "Is there a free trial or pricing plan?",
+    answer: "Oferecemos um período de teste gratuito e planos escaláveis baseados na quantidade de mensagens e recursos utilizados.",
+  },
+];
+
+export default function FAQSection() {
+  return (
+    <Container maxWidth="md" sx={{ backgroundColor: "#1a1a1a", color: "#eee", py: 6 }}>
+      {faqs.map(({ question, answer }, i) => (
+        <Accordion key={i} sx={{ backgroundColor: "#2a2a2a", color: "#ccc", mb: 1 }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon sx={{ color: "#a259ff" }} />}>
+            <Typography sx={{ color: "#a259ff", fontWeight: 600 }}>{question}</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography>{answer}</Typography>
+          </AccordionDetails>
+        </Accordion>
+      ))}
+    </Container>
+  );
+}
