@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import SessionProvider from "./providers/auth-provider"
+import { authOptions } from "./api/[...nextauth]/route";
+import { getServerSession } from "next-auth";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -17,12 +20,14 @@ export const metadata: Metadata = {
   description: "Whatsapp ai agent",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await getServerSession(authOptions);
   return (
+    <SessionProvider session={session}>
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
@@ -30,5 +35,6 @@ export default function RootLayout({
         {children}
       </body>
     </html>
+    </SessionProvider>
   );
 }
