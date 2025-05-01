@@ -18,21 +18,19 @@ const authOptions: AuthOptions = {
 
         const { email, password } = credentials;
 
+        try{
         // Busca o usuário pelo email
         const user = await prisma.user.findUnique({
           where: { email },
         });
 
-        if (!user) {
-          throw new Error("Email não encontrado");
-        }
+        if (!user) return null;
+
 
         // Verifica a senha (considerando que você armazena a senha hasheada, como bcrypt)
         const isValidPassword = await verifyPassword(password, user.password);
 
-        if (!isValidPassword) {
-          throw new Error("Senha inválida");
-        }
+        if (!isValidPassword) return null;
 
         return {
           id: user.id,
@@ -40,7 +38,10 @@ const authOptions: AuthOptions = {
           email: user.email,
           companyId: user.companyId, // já pensando em associar usuários às empresas
         };
-      },
+      } catch (err) {
+        console.error('Erro no authorize:', err);
+        return null; // Nunca throw aqui
+      }}
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,

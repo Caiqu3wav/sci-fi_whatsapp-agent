@@ -50,12 +50,12 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen hero-bg flex flex-col">
       <main className="flex-1 flex flex-col items-center justify-center py-12 px-4">
-        <div className="w-full max-w-md space-y-8">
+        <div className="w-full text-white max-w-md space-y-8">
           <div className="text-center">
             <h1 className="text-3xl font-bold">
-              <span className="text-gradient">Sci-Fi AI</span>
+              <span className="text-gradient text-purple-800">Sci-Fi AI</span>
             </h1>
             <h2 className="mt-2 text-2xl font-semibold">Entre na sua conta</h2>
             <p className="mt-2 text-gray-400">

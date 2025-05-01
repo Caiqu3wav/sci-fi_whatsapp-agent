@@ -45,7 +45,7 @@ export const Footer = () => {
           <p className="text-gray-400 mb-4 md:mb-0">
             © 2024 Sci-Fi AI. All rights reserved.
           </p>
-          <div className="flex space-x-6 px-2 border-2 border-gray-500">
+          <div className="flex space-x-6 px-2 border-gray-500">
             <Link href="#" className="text-gray-400 hover:text-purple-400 transition-colors">
               <FaInstagram className="w-5 h-5" />
             </Link>

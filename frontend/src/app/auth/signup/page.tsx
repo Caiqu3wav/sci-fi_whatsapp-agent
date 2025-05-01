@@ -103,12 +103,12 @@ export default function SignUp() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen hero-bg flex flex-col">
       <main className="flex-1 flex flex-col items-center justify-center py-12 px-4">
-        <div className="w-full max-w-md space-y-6">
+        <div className="w-full max-w-md space-y-6 text-white">
           <div className="text-center">
             <h1 className="text-3xl font-bold">
-              <span className="text-gradient">Sci-Fi AI</span>
+              <span className="text-gradient text-purple-800">Sci-Fi AI</span>
             </h1>
             <h2 className="mt-2 text-2xl font-semibold">Crie sua conta</h2>
             <p className="mt-2 text-gray-400">
@@ -313,7 +313,7 @@ export default function SignUp() {
                 <div className="text-center mt-4">
                   <p className="text-sm text-gray-400">
                     Já tem uma conta?{" "}
-                    <Link href="/signin" className="text-purple-400 hover:text-purple-300">
+                    <Link href="/login" className="text-purple-400 hover:text-purple-300">
                       Faça login
                     </Link>
                   </p>

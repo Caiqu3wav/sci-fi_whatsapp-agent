@@ -6,7 +6,7 @@
     --color-primary-200: oklch(0.5 0.2407 300.72);
   }
 
-.hero{
+.hero-bg{
     background: url(../../public/assets/img/purpe-sci-fi_bg.png);
     background-size: cover;
     background-repeat: none;
