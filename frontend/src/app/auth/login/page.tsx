@@ -1,5 +1,5 @@
 'use client'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -16,6 +16,8 @@ import {
 } from "@/app/components/ui/form";
 import { Mail, Lock, LogIn } from "lucide-react";
 import { Footer } from "@/app/components/sections/Footer";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
     email: z.string().email({
@@ -24,11 +26,22 @@ const formSchema = z.object({
     password: z.string().min(6, {
         message: "Password must have at least 6 characters.",
     }),
-    
 })
 
 export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [loginError, setLoginError] = useState('');
+    const router = useRouter();
+    const { status: sessionStatus } = useSession();
+
+    useEffect(() => {
+      setInterval(() => {
+        if (sessionStatus === "authenticated") {
+          router.replace("/");
+        }
+      }, 5000);
+    }, [sessionStatus, router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -38,15 +51,46 @@ export default function LoginPage() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  const isValidEmail = (email: string) => {
+    const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    return regex.test(email);
+  }
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     
-    // This would be replaced with actual authentication
-    console.log(values);
-    
-    setTimeout(() => {
+    if (isValidEmail(values.email)) {
+      setLoginError("Invalid email.");
+      return;
+    }
+
+    if (!values.password || values.password.length < 8) {
+      setLoginError("Invalid password(min 8 characters).");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const res = await signIn("credentials", {
+        redirect: false,
+        email: values.email,
+        password: values.password,
+        callbackUrl: '/'
+      });
+
+      if (!res || res.ok !== true) {
+        setLoginError("Email ou senha não corresponder.");
+        return;
+      }
+
+      setSuccessMessage("Usuário logged with success!")
+    } catch (error) {
+      setLoginError("Error signing account");
+      console.error("Sign in error: ", error);
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   }
 
   return (
@@ -145,6 +189,9 @@ export default function LoginPage() {
                       Registre-se
                     </Link>
                   </p>
+
+                  {loginError && <p style={{color: 'red'}}>{loginError}</p>}
+                  {successMessage && <p style={{color: 'blue'}}>{successMessage}</p>}
                 </div>
               </form>
             </Form>
