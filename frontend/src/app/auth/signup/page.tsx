@@ -15,30 +15,35 @@ import {
   FormMessage,
 } from "@/app/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { User, Mail, Lock, Building } from "lucide-react";
+import { User, Mail, Lock, Building, Globe } from "lucide-react";
 import { Footer } from "@/app/components/sections/Footer";
+import Select from 'react-select';
+import { languageOptions } from '@/app/utils/index'
 
 // Define the form schema with validation
 const signUpSchema = z.object({
   name: z.string().min(3, {
-    message: "Nome deve ter pelo menos 3 caracteres.",
+    message: "Name must be at least 3 characters long.",
   }),
   email: z.string().email({
-    message: "Digite um e-mail válido.",
+    message: "Please enter a valid email.",
+  }),
+  language: z.string().min(1, {
+    message: "Please specify your language.",
   }),
   password: z.string().min(6, {
-    message: "A senha deve ter pelo menos 6 caracteres.",
+    message: "Password must be at least 6 characters long.",
   }),
   confirmPassword: z.string().min(6, {
-    message: "A confirmação de senha deve ter pelo menos 6 caracteres.",
+    message: "Password confirmation must be at least 6 characters long.",
   }),
   companyOption: z.enum(["create", "join"], {
-    required_error: "Selecione uma opção de empresa.",
+    required_error: "Please select a company option.",
   }),
   companyName: z.string().optional(),
   companyCode: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "As senhas não coincidem.",
+  message: "Passwords do not match.",
   path: ["confirmPassword"],
 }).refine(
   (data) => {
@@ -141,6 +146,32 @@ export default function SignUp() {
                       </FormItem>
                     )}
                   />
+
+                  <FormField
+                    control={form.control}
+                    name="language"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Prefered language</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Globe className="absolute left-3 top-3 h-5 w-5 text- z-10" />
+                            <div className="pl-10">
+                              <Select
+                                options={languageOptions}
+                                className="bg-transparent text-white"
+                                onChange={(selected) => field.onChange(selected?.value)}
+                                defaultValue={languageOptions.find((opt: { value: string | undefined; }) => opt.value === field.value)}
+                                classNamePrefix="react-select"
+                                placeholder="Selecione seu idioma"
+                              />
+                            </div>
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+ )}
+/>
 
                   <FormField
                     control={form.control}
