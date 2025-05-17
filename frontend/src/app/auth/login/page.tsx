@@ -20,9 +20,13 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-    email: z.string().email({
-        message: "Type a valid e-mail.",
-    }),
+    identifier: z.string().refine(value => {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+    const phoneRegex = /^\+?[0-9]{10,15}$/; // Aceita formatos internacionais
+    return emailRegex.test(value) || phoneRegex.test(value);
+  }, {
+    message: "Digite um e-mail ou número de telefone válido.",
+  }),
     password: z.string().min(6, {
         message: "Password must have at least 6 characters.",
     }),
@@ -46,23 +50,13 @@ export default function LoginPage() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      identifier: "",
       password: "",
     },
-  });
-
-  const isValidEmail = (email: string) => {
-    const regex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-    return regex.test(email);
-  }
+  }); 
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    
-    if (isValidEmail(values.email)) {
-      setLoginError("Invalid email.");
-      return;
-    }
 
     if (!values.password || values.password.length < 8) {
       setLoginError("Invalid password(min 8 characters).");
@@ -74,17 +68,17 @@ export default function LoginPage() {
     try {
       const res = await signIn("credentials", {
         redirect: false,
-        email: values.email,
+        identifier: values.identifier,
         password: values.password,
         callbackUrl: '/'
       });
 
       if (!res || res.ok !== true) {
-        setLoginError("Email ou senha não corresponder.");
+        setLoginError("Email/phone or password invalid.");
         return;
       }
 
-      setSuccessMessage("Usuário logged with success!")
+      setSuccessMessage("User logged with success!")
     } catch (error) {
       setLoginError("Error signing account");
       console.error("Sign in error: ", error);
@@ -112,15 +106,15 @@ export default function LoginPage() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                   control={form.control}
-                  name="email"
+                  name="identifier"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>E-mail</FormLabel>
+                    <FormLabel>E-mail ou telefone</FormLabel>
                       <FormControl>
                         <div className="relative">
                           <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                           <Input 
-                            placeholder="seu@email.com" 
+                            placeholder="seu@email.com ou +5598999999999"
                             className="pl-10" 
                             {...field} 
                           />
