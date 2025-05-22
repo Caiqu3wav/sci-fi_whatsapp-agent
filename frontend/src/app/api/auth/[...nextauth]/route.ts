@@ -14,9 +14,11 @@ const authOptions: AuthOptions = {
         password: { label: "Password", type: "password", placeholder: "••••••••" }
       },
       authorize: async (credentials) => {
-        if (!credentials) return null;
-
-        const { email, password } = credentials;
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
 
         try{
         // Busca o usuário pelo email

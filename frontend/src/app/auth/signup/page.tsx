@@ -5,7 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
+import { Input } from "@/app/components/ui/input"
 import {
   Form,
   FormControl,
@@ -13,12 +13,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/app/components/ui/form";
-import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group";
-import { User, Mail, Lock, Building, Globe } from "lucide-react";
-import { Footer } from "@/app/components/sections/Footer";
-import Select from 'react-select';
+} from "@/app/components/ui/form"
+import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group"
+import { User, Mail, Lock, Building, Globe } from "lucide-react"
+import { Footer } from "@/app/components/sections/Footer"
+import Select from 'react-select'
 import { languageOptions } from '@/app/utils/index'
+import { signIn } from "next-auth/react"
 
 // Define the form schema with validation
 const signUpSchema = z.object({
@@ -63,6 +64,8 @@ const signUpSchema = z.object({
 
 export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
+  const [signUpSucess, setSignUpSucess] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -80,7 +83,7 @@ export default function SignUp() {
   // Watch for changes to the companyOption field
   const companyOption = form.watch("companyOption");
 
-  function onSubmit(values: z.infer<typeof signUpSchema>) {
+  async function onSubmit(values: z.infer<typeof signUpSchema>) {
     setIsLoading(true);
     
     // This would be replaced with actual registration logic
@@ -100,11 +103,24 @@ export default function SignUp() {
       role: values.companyOption === "create" ? "ADMIN" : "USER",
     };
     
-    console.log("Data to send:", userData);
-    
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (res.ok) {
+        setSignUpSucess(true);
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+    } finally {
+        setIsLoading(false);
+      }
+    }
   }
 
   return (
