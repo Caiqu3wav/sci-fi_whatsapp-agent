@@ -49,3 +49,19 @@ def me(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
 
     user = db.query(User).filter(User.email == email).first()
     return user
+
+@router.post("/google")
+def google_login(data: RegisterInput, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == data.email).first()
+    if not user:
+        new_user = User(
+            email=data.email,
+            name=data.name,
+            password=None  # pode ser null ou string vazia
+        )
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return {"id": new_user.id, "status": "created"}
+    
+    return {"id": user.id, "status": "exists"}
