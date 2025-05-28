@@ -40,7 +40,7 @@ const signUpSchema = z.object({
   confirmPassword: z.string().min(6, {
     message: "Password confirmation must be at least 6 characters long.",
   }),
-  companyOption: z.enum(["create", "join"], {
+  companyOption: z.enum(["none", "create", "join"], {
     required_error: "Please select a company option.",
   }),
   companyName: z.string().optional(),
@@ -77,7 +77,7 @@ export default function SignUp() {
       phone: "",
       password: "",
       confirmPassword: "",
-      companyOption: "create",
+      companyOption: "none",
       companyName: "",
       companyCode: "",
     },
@@ -87,12 +87,8 @@ export default function SignUp() {
   const companyOption = form.watch("companyOption");
 
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
-    setIsLoading(true);
-    
-    // This would be replaced with actual registration logic
-    console.log(values);
-    
-    // Create object to send to backend
+    setIsLoading(true); 
+
     const userData = {
       name: values.name,
       email: values.email,
@@ -100,18 +96,52 @@ export default function SignUp() {
       password: values.password,
       company: {
         name: values.companyName || "",
+        id: "",
       },
       status: values.companyOption === "create" ? "APPROVED" : "PENDING",
       role: values.companyOption === "create" ? "ADMIN" : "USER",
     };
     
-    try {
+  try {
+    if (values.companyOption === "create") {
+      const companyRes = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/company`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: values.companyName }),
+      });
+
+      if (!companyRes.ok) throw new Error("Erro ao criar empresa");
+
+      const companyData = await companyRes.json();
+      userData.company.id = companyData.id;
+    } else if (values.companyOption === "join") {
+      /* future implement
+      const getCompany = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/company/${userData.company}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({  })
+      })
+      */
+    }
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(userData),
+        body: JSON.stringify({
+          name: userData.name,
+          email: userData.email,
+          phone_number: userData.phone_number,
+          company_id: userData.company.id,
+          password: userData.password,
+          status: userData.status,
+          role: userData.role
+        }),
       });
 
       if (res.ok) {
@@ -289,93 +319,96 @@ export default function SignUp() {
                   />
                 </div>
 
-                <div className="space-y-4 pt-2">
-                  <h3 className="text-lg font-medium flex items-center gap-2 border-b border-purple-500/20 pb-2">
-                    <Building className="h-5 w-5 text-purple-400" />
-                    Informações da Empresa
-                  </h3>
+                <FormField
+  control={form.control}
+  name="companyOption"
+  render={({ field }) => (
+    <FormItem className="space-y-3">
+      <FormLabel>Deseja se vincular a uma empresa?</FormLabel>
+      <FormControl>
+        <RadioGroup
+          onValueChange={field.onChange}
+          defaultValue={field.value}
+          className="flex flex-col space-y-1"
+        >
+          <FormItem className="flex items-center space-x-3 space-y-0">
+            <FormControl>
+              <RadioGroupItem value="create" />
+            </FormControl>
+            <FormLabel className="font-normal cursor-pointer">
+              Criar nova empresa
+            </FormLabel>
+          </FormItem>
 
-                  <FormField
-                    control={form.control}
-                    name="companyOption"
-                    render={({ field }) => (
-                      <FormItem className="space-y-3">
-                        <FormLabel>Escolha uma opção:</FormLabel>
-                        <FormControl>
-                          <RadioGroup
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                            className="flex flex-col space-y-1"
-                          >
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="create" />
-                              </FormControl>
-                              <FormLabel className="font-normal cursor-pointer">
-                                Criar nova empresa
-                              </FormLabel>
-                            </FormItem>
-                            <FormItem className="flex items-center space-x-3 space-y-0">
-                              <FormControl>
-                                <RadioGroupItem value="join" />
-                              </FormControl>
-                              <FormLabel className="font-normal cursor-pointer">
-                                Entrar em empresa existente
-                              </FormLabel>
-                            </FormItem>
-                          </RadioGroup>
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+          <FormItem className="flex items-center space-x-3 space-y-0">
+            <FormControl>
+              <RadioGroupItem value="join" />
+            </FormControl>
+            <FormLabel className="font-normal cursor-pointer">
+              Entrar em empresa existente
+            </FormLabel>
+          </FormItem>
 
-                  {companyOption === "create" && (
-                    <FormField
-                      control={form.control}
-                      name="companyName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nome da empresa</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Building className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                              <Input 
-                                placeholder="Nome da sua empresa" 
-                                className="pl-10" 
-                                {...field} 
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
+          <FormItem className="flex items-center space-x-3 space-y-0">
+            <FormControl>
+              <RadioGroupItem value="none" />
+            </FormControl>
+            <FormLabel className="font-normal cursor-pointer">
+              Não quero vincular a uma empresa
+            </FormLabel>
+          </FormItem>
+        </RadioGroup>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
 
-                  {companyOption === "join" && (
-                    <FormField
-                      control={form.control}
-                      name="companyCode"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Código ou nome da empresa</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Building className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                              <Input 
-                                placeholder="Código ou nome da empresa" 
-                                className="pl-10" 
-                                {...field} 
-                              />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  )}
-                </div>
+{companyOption === "create" && (
+  <FormField
+    control={form.control}
+    name="companyName"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Nome da empresa</FormLabel>
+        <FormControl>
+          <div className="relative">
+            <Building className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Input
+              placeholder="Nome da sua empresa"
+              className="pl-10"
+              {...field}
+            />
+          </div>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+)}
+
+{companyOption === "join" && (
+  <FormField
+    control={form.control}
+    name="companyCode"
+    render={({ field }) => (
+      <FormItem>
+        <FormLabel>Código ou nome da empresa</FormLabel>
+        <FormControl>
+          <div className="relative">
+            <Building className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Input
+              placeholder="Código ou nome da empresa"
+              className="pl-10"
+              {...field}
+            />
+          </div>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+)}
 
                 <Button 
                   type="submit" 
