@@ -14,7 +14,7 @@ const authOptions: AuthOptions = {
         password: { label: "Password", type: "password", placeholder: "••••••••" }
       },
       authorize: async (credentials) => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/login`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
@@ -45,7 +45,7 @@ const authOptions: AuthOptions = {
     // Apenas se o login for pelo Google
     if (account?.provider === "google") {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/google`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/google`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

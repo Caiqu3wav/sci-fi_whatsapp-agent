@@ -4,6 +4,8 @@ import "./globals.css";
 import SessionProvider from "./providers/auth-provider"
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
+import { ToasterProvider } from "@/providers/ToasterProvider";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +32,8 @@ export default async function RootLayout({
     <SessionProvider session={session}>
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <ToasterProvider />
         {children}
       </body>
     </html>

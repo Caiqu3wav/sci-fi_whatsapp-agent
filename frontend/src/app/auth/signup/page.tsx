@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,6 +20,7 @@ import { User, Mail, Lock, Building, Globe } from "lucide-react"
 import { Footer } from "@/app/components/sections/Footer"
 import { languageOptions } from '@/app/utils/index'
 import { signIn } from "next-auth/react";
+import { toast } from 'react-hot-toast'
 
 // Define the form schema with validation
 const signUpSchema = z.object({
@@ -45,6 +47,7 @@ const signUpSchema = z.object({
   }),
   companyName: z.string().optional(),
   companyCode: z.string().optional(),
+  companyId: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match.",
   path: ["confirmPassword"],
@@ -68,6 +71,8 @@ export default function SignUp() {
   const [isLoading, setIsLoading] = useState(false);
   const [signUpSucess, setSignUpSucess] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [companyMatches, setCompanyMatches] = useState([]);
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -80,8 +85,25 @@ export default function SignUp() {
       companyOption: "none",
       companyName: "",
       companyCode: "",
+      companyId: "", 
     },
   });
+
+  const { setValue } = form;
+
+  useEffect(() => {
+  const timeout = setTimeout(() => {
+    if (searchQuery.length > 1) {
+      fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/company/search?query=${searchQuery}`)
+        .then((res) => res.json())
+        .then((data) => setCompanyMatches(data));
+    } else {
+      setCompanyMatches([]);
+    }
+  }, 300);
+
+  return () => clearTimeout(timeout);
+}, [searchQuery]);
 
   // Watch for changes to the companyOption field
   const companyOption = form.watch("companyOption");
@@ -117,18 +139,25 @@ export default function SignUp() {
       const companyData = await companyRes.json();
       userData.company.id = companyData.id;
     } else if (values.companyOption === "join") {
-      /* future implement
-      const getCompany = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/company/${userData.company}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({  })
-      })
-      */
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/company/search?query=${values.companyCode}`);
+        if (!res.ok) {
+          throw new Error("Empresa não encontrada");
+        }
+
+        const company = await res.json();
+
+        // Aqui você seta o ID da empresa no form (antes de enviar o usuário)
+        setValue("companyId", company.id);
+
+        // Depois disso, pode seguir com o submit normal
+      } catch (err: any) {
+        toast.error("Erro ao buscar empresa. Verifique o código/nome digitado.", err);
+        return;
+      }
     }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/register`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/users/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -365,6 +394,7 @@ export default function SignUp() {
 />
 
 {companyOption === "create" && (
+  <>
   <FormField
     control={form.control}
     name="companyName"
@@ -380,11 +410,33 @@ export default function SignUp() {
               {...field}
             />
           </div>
+          
         </FormControl>
         <FormMessage />
       </FormItem>
     )}
   />
+  <FormField
+    control={form.control}
+    name="companyName"
+    render={({ field }) => ( 
+      <FormItem>
+        <FormLabel>Invent your business ID code</FormLabel>
+        <FormControl>
+          <div className="relative">
+            <Building className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+            <Input
+              placeholder="(ex: ewr43535ew)"
+              className="pl-10"
+              {...field}
+            />
+          </div>
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    )}
+  />
+  </>
 )}
 
 {companyOption === "join" && (
@@ -401,7 +453,28 @@ export default function SignUp() {
               placeholder="Código ou nome da empresa"
               className="pl-10"
               {...field}
+              onChange={(e) => {
+                field.onChange(e);
+                setSearchQuery(e.target.value);
+              }}
             />
+            {companyMatches.length > 0 && (
+              <ul className="absolute z-10 w-full bg-white border rounded mt-1 shadow">
+                {companyMatches.map((company: any) => (
+                  <li
+                    key={company.id}
+                    onClick={() => {
+                      setValue("companyCode", company.code);
+                      setValue("companyId", company.id);
+                      setCompanyMatches([]);
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  >
+                    {company.name} <span className="text-xs text-gray-500">({company.code})</span>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </FormControl>
         <FormMessage />
