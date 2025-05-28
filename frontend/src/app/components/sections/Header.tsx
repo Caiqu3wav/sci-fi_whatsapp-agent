@@ -21,8 +21,8 @@ export default function Header() {
       path: "/about"
     },
     {
-      name: "Home",
-      path: "/"
+      name: "Management",
+      path: "/management"
     },
   ]
 

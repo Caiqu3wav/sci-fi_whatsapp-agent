@@ -17,9 +17,8 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/app/components/ui/radio-group"
 import { User, Mail, Lock, Building, Globe } from "lucide-react"
 import { Footer } from "@/app/components/sections/Footer"
-import Select from 'react-select'
 import { languageOptions } from '@/app/utils/index'
-import { signIn } from "next-auth/react"
+import { signIn } from "next-auth/react";
 
 // Define the form schema with validation
 const signUpSchema = z.object({
@@ -28,6 +27,9 @@ const signUpSchema = z.object({
   }),
   email: z.string().email({
     message: "Please enter a valid email.",
+  }),
+  phone: z.string().max(15, {
+    message: "Please enter your phone number.",
   }),
   language: z.string().min(1, {
     message: "Please specify your language.",
@@ -72,6 +74,7 @@ export default function SignUp() {
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       password: "",
       confirmPassword: "",
       companyOption: "create",
@@ -93,11 +96,10 @@ export default function SignUp() {
     const userData = {
       name: values.name,
       email: values.email,
+      phone_number: values.phone,
       password: values.password,
       company: {
-        type: values.companyOption,
         name: values.companyName || "",
-        code: values.companyCode || "",
       },
       status: values.companyOption === "create" ? "APPROVED" : "PENDING",
       role: values.companyOption === "create" ? "ADMIN" : "USER",
@@ -116,12 +118,12 @@ export default function SignUp() {
         setSignUpSucess(true);
       }
     } catch (error) {
+      setIsError(true);
       console.error("Error during registration:", error);
     } finally {
         setIsLoading(false);
       }
     }
-  }
 
   return (
     <div className="min-h-screen hero-bg flex flex-col">
@@ -136,10 +138,25 @@ export default function SignUp() {
               Entre para o futuro da comunicação inteligente
             </p>
           </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full flex cursor-pointer items-center justify-center gap-2 border-gray-600 text-black bg-white hover:bg-white/40transition mt-4"
+            onClick={() => signIn("google", { callbackUrl: "/" })}
+          >
+            <svg className="h-5 w-5" viewBox="0 0 48 48">
+              <path fill="#EA4335" d="M24 9.5c3.54 0 6.52 1.22 8.95 3.21l6.69-6.69C35.64 2.56 30.24 0 24 0 14.64 0 6.74 5.4 2.9 13.26l7.91 6.15C13.18 13.53 18.22 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.14 24.5c0-1.54-.14-3.03-.4-4.47H24v8.47h12.55c-.55 2.95-2.2 5.45-4.67 7.14l7.24 5.63c4.25-3.93 6.67-9.72 6.67-16.77z"/>
+              <path fill="#FBBC05" d="M10.81 28.21a14.94 14.94 0 010-8.43l-7.91-6.15A24.02 24.02 0 000 24c0 3.89.93 7.56 2.9 10.82l7.91-6.61z"/>
+              <path fill="#34A853" d="M24 48c6.24 0 11.46-2.07 15.26-5.61l-7.24-5.63c-2.04 1.38-4.65 2.2-8.02 2.2-5.78 0-10.82-4.03-12.57-9.47l-7.91 6.61C6.74 42.6 14.64 48 24 48z"/>
+              <path fill="none" d="M0 0h48v48H0z"/>
+            </svg>
+            Continuar com Google
+          </Button>
 
           <div className="card-gradient rounded-xl p-8 shadow-lg">
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 flex items-center flex-col ">
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium flex items-center gap-2 border-b border-purple-500/20 pb-2">
                     <User className="h-5 w-5 text-purple-400" />
@@ -151,11 +168,11 @@ export default function SignUp() {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Nome completo</FormLabel>
+                        <FormLabel>Tell us your Name</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-                            <Input placeholder="Seu nome completo" className="pl-10" {...field} />
+                            <Input placeholder="Your name" className="pl-10" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -173,14 +190,18 @@ export default function SignUp() {
                           <div className="relative">
                             <Globe className="absolute left-3 top-3 h-5 w-5 text- z-10" />
                             <div className="pl-10">
-                              <Select
-                                options={languageOptions}
-                                className="bg-transparent text-white"
-                                onChange={(selected) => field.onChange(selected?.value)}
-                                defaultValue={languageOptions.find((opt: { value: string | undefined; }) => opt.value === field.value)}
-                                classNamePrefix="react-select"
-                                placeholder="Selecione seu idioma"
-                              />
+                              <select
+                                value={field.value}
+                                onChange={(e) => field.onChange(e.target.value)}
+                                className="w-full appearance-none bg-white text-black border border-zinc-300 rounded px-4 py-2"
+                              >
+                                <option value="" disabled>Select your language</option>
+                                {languageOptions.map((opt) => (
+                                  <option key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </select>
                             </div>
                           </div>
                         </FormControl>
@@ -199,6 +220,23 @@ export default function SignUp() {
                           <div className="relative">
                             <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                             <Input placeholder="seu@email.com" className="pl-10" {...field} />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Your phone number</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                            <Input placeholder="(99) 99999-9999" className="pl-10" {...field} />
                           </div>
                         </FormControl>
                         <FormMessage />
@@ -341,7 +379,7 @@ export default function SignUp() {
 
                 <Button 
                   type="submit" 
-                  className="w-full bg-purple-600 hover:bg-purple-700 mt-6" 
+                  className="w-full cursor-pointer bg-purple-600 hover:bg-purple-700 mt-6" 
                   disabled={isLoading}
                 >
                   {isLoading ? (
@@ -356,7 +394,12 @@ export default function SignUp() {
                     "Criar conta"
                   )}
                 </Button>
-
+                    {isError && (
+                       <p className="text-red-400 font-bold">Error registering</p>
+                    )}
+                    {signUpSucess && (
+                       <p className="text-green-500 font-bold">Registered with success</p>
+                    )}
                 <div className="text-center mt-4">
                   <p className="text-sm text-gray-400">
                     Já tem uma conta?{" "}

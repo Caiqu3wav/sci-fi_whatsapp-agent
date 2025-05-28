@@ -1,14 +1,17 @@
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
+import os
+from dotenv import load_dotenv
+from app.models.client import Base
 
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/whatsapp")
+engine = create_engine(DATABASE_URL, echo=True)
 
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+SessionLocal = sessionmaker(bind=engine)
 
-Base = declarative_base()
+Base.metadata.create_all(bind=engine)
 
 def get_db():
     db = SessionLocal()

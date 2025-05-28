@@ -10,7 +10,7 @@ const authOptions: AuthOptions = {
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "email@example.com" },
+        identifier: { label: "Email ou telefone", type: "text", placeholder: "email ou telefone" },
         password: { label: "Password", type: "password", placeholder: "••••••••" }
       },
       authorize: async (credentials) => {
@@ -28,7 +28,7 @@ const authOptions: AuthOptions = {
         return null; 
       } catch (err) {
         console.error('Erro no authorize:', err);
-        return null; // Nunca throw aqui
+        return null;
       }}
     }),
     GoogleProvider({

@@ -11,7 +11,8 @@ class User(Base):
 
     id = Column(String, primary_key=True, index=True)
     name = Column(String, nullable=True)
-    email = Column(String, unique=True, nullable=False)
+    phone_number = Column(String, nullable=False)
+    email = Column(String, unique=True, nullable=True)
     password = Column(String, nullable=False)
     role = Column(Enum(RoleEnum), default=RoleEnum.PENDING)
     status = Column(Enum(UserStatusEnum), default=UserStatusEnum.PENDING)
@@ -30,6 +31,7 @@ class Company(Base):
 
     id = Column(String, primary_key=True)
     name = Column(String, unique=True, nullable=False)
+    phone_number = Column(String, nullable=False)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
