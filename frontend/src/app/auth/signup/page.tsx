@@ -48,6 +48,7 @@ const signUpSchema = z.object({
   companyName: z.string().optional(),
   companyCode: z.string().optional(),
   companyId: z.string().optional(),
+  companySearch: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords do not match.",
   path: ["confirmPassword"],
@@ -73,6 +74,7 @@ export default function SignUp() {
   const [isError, setIsError] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [companyMatches, setCompanyMatches] = useState([]);
+const [isSearching, setIsSearching] = useState(false);
 
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
@@ -85,6 +87,7 @@ export default function SignUp() {
       companyOption: "none",
       companyName: "",
       companyCode: "",
+      companySearch: "",
       companyId: "", 
     },
   });
@@ -94,16 +97,21 @@ export default function SignUp() {
   useEffect(() => {
   const timeout = setTimeout(() => {
     if (searchQuery.length > 1) {
+      setIsSearching(true);
       fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/company/search?query=${searchQuery}`)
         .then((res) => res.json())
-        .then((data) => setCompanyMatches(data));
+        .then((data) => {
+          setCompanyMatches(data);
+          setIsSearching(false);
+        })
+        .catch(() => setIsSearching(false));
     } else {
       setCompanyMatches([]);
     }
   }, 300);
 
   return () => clearTimeout(timeout);
-}, [searchQuery]);
+}, [searchQuery]); 
 
   // Watch for changes to the companyOption field
   const companyOption = form.watch("companyOption");
@@ -140,7 +148,7 @@ export default function SignUp() {
       userData.company.id = companyData.id;
     } else if (values.companyOption === "join") {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/company/search?query=${values.companyCode}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/company/search?query=${values.companySearch}`);
         if (!res.ok) {
           throw new Error("Empresa não encontrada");
         }
@@ -442,7 +450,7 @@ export default function SignUp() {
 {companyOption === "join" && (
   <FormField
     control={form.control}
-    name="companyCode"
+    name="companySearch"
     render={({ field }) => (
       <FormItem>
         <FormLabel>Código ou nome da empresa</FormLabel>
@@ -464,6 +472,7 @@ export default function SignUp() {
                   <li
                     key={company.id}
                     onClick={() => {
+                      setValue("companySearch", `${company.name} (${company.code})`);
                       setValue("companyCode", company.code);
                       setValue("companyId", company.id);
                       setCompanyMatches([]);
@@ -473,6 +482,9 @@ export default function SignUp() {
                     {company.name} <span className="text-xs text-gray-500">({company.code})</span>
                   </li>
                 ))}
+                {isSearching && (
+                  <li className="px-4 py-2 text-sm text-gray-500">Buscando...</li>
+                )}
               </ul>
             )}
           </div>

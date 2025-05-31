@@ -29,7 +29,9 @@ def search_companies(query: str, db: Session = Depends(get_db)):
 @router.post("company", status_code=status.HTTP_201_CREATED)
 def create_company(data: Company,db: Session = Depends(get_db)):
     exists = db.query(Company).filter(Company.email == data.email).first()
-    if exists:
+    existing_code = db.query(Company).filter(Company.code == data.code).first()
+
+    if exists or existing_code:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
         detail="Empresa já existe"
         )
