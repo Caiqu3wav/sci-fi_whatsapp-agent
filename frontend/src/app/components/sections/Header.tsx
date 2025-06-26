@@ -6,10 +6,13 @@ import { VscActivateBreakpoints } from "react-icons/vsc";
 import Link from 'next/link';
 import { useSession } from 'next-auth/react'
 import ProfileModal from '../ProfileModal';
+import AuthModal from '../modals/AuthModal';
+
 
 export default function Header() {
   const { data: session } = useSession();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [isAuthOpen, setAuthOpen] = useState(false);
 
   const data = [
     {
@@ -37,7 +40,7 @@ export default function Header() {
             </ul>
         </nav>
         {!session ? (
-        <Link href={"auth/login"} className='w-[120px] gap-2 bg-gradient-to-b from-purple-900 to-transparent py-3.5 rounded-2xl flex items-center justify-center'><VscActivateBreakpoints size={20} /> <span>login</span></Link>
+        <button onClick={() => setAuthOpen(true)} className='w-[120px] cursor-pointer gap-2 bg-gradient-to-b from-purple-900 to-transparent py-3.5 rounded-2xl flex items-center justify-center'><VscActivateBreakpoints size={20} /> <span>login</span></button>
         ) : (
           <>
           <button onClick={() => setProfileModalOpen(!profileModalOpen)} 
@@ -46,6 +49,8 @@ export default function Header() {
           {profileModalOpen && <ProfileModal isOpen={profileModalOpen} setIsOpen={setProfileModalOpen} />}
           </>
         )}
+
+        <AuthModal isOpen={isAuthOpen} setIsOpen={() => setAuthOpen(false)}/>
     </header>
   )
 }

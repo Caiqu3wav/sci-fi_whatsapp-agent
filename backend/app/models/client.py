@@ -21,9 +21,9 @@ class User(Base):
 
     company_id = Column(String, ForeignKey("company.id"), nullable=True)
 
-    company = relationship("Company", back_populates="users")
-    clients = relationship("Client", back_populates="user")
-    flows = relationship("Flow", back_populates="user")
+    company = relationship("Company", back_populates="users" nullable=True)
+    clients = relationship("Client", back_populates="user", nullable=True)
+    flows = relationship("Flow", back_populates="user", nullable=True)
     integrations = relationship("Integration", back_populates="user")
 
 class Company(Base):
