@@ -1,12 +1,17 @@
 from typing import Dict
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 
 def gerar_flow_customizado(prompt_usuario: str) -> Dict:
     llm = ChatOpenAI(
         model="google/gemma-7b-it",
         base_url="https://openrouter.ai/api/v1",
-        api_key="YOUR_OPENROUTER_API_KEY"
+        api_key=os.getenv("OPENROUTER_KEY")
     )
 
     system_instruction = """
