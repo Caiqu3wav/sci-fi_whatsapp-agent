@@ -87,3 +87,15 @@ class Integration(Base):
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     user = relationship("User", back_populates="integrations")
+
+class MessageLog(Base):
+    __tablename__ = "message_log"
+
+    id = Column(String, primary_key=True, default=lambda: str(uuid4()))
+    flow_id = Column(String, ForeignKey("flow.id"))
+    to = Column(String)
+    status = Column(String)
+    response = Column(Text)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+    flow = relationship("Flow")
