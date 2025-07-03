@@ -8,7 +8,6 @@ def enviar_mensagem_whatsapp(integration, numero_destino, mensagem, pdf_path=Non
     }
 
     if pdf_path:
-        # Use algo como Firebase/S3 para tornar o PDF acessível publicamente
         data = {
             "messaging_product": "whatsapp",
             "to": numero_destino,

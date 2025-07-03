@@ -4,7 +4,7 @@ from models import User, Flow
 from schemas import FlowPromptRequest, FlowResponse
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
-from app.db.database import 
+from app.db.database import get_db
 import json
 
 router = APIRouter()

@@ -1,18 +1,17 @@
 from fastapi import FastAPI
-from app.routes import users, company
+from app.routes import users, company, flows
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
-from models import Flow, Integration, Client
-from database import SessionLocal
+from app.models.client import Flow, Integration, Client
+from app.db.database import SessionLocal
 from app.services.whatsapp import enviar_mensagem_whatsapp
-
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # or ["http://localhost:3000"] etc.
+    allow_origins=["http://localhost:3000"],  # or ["http://localhost:3000"] etc.
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -20,10 +19,11 @@ app.add_middleware(
 
 app.include_router(users.router)
 app.include_router(company.router)
+app.include_router(flows.router)
 
 def executar_flows():
     db = SessionLocal()
-    now = datetime.utcnow()
+    now = datetime.now()
     flows = db.query(Flow).filter(Flow.schedule_time <= now, Flow.active == True).all()
 
     for flow in flows:
