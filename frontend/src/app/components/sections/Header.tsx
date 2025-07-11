@@ -31,11 +31,16 @@ export default function Header() {
 
   return (
     <header className='flex w-full fixed top-0 left-0 z-50 h-[120px] justify-between bg-gradient-to-b from-black to-transparent text-white px-3 items-center'>
-        <Image src={SciFiLogo} className='w-[80px]' alt='sci-fi logo' />
+        <Image src={SciFiLogo} className='w-[80px]' alt='sci-fi logo'  />
         <nav className='flex items-center justify-between w-[400px]'>
             <ul className='flex items-center justify-between w-[400px]'>
                 {data.map((item, index) => (
-                    <Link href={item.path} key={index}><li>{item.name}</li></Link>
+                    <li key={index} className="relative group">
+                        <Link className="transition-all duration-300 border-b-2 border-transparent 
+                        group-hover:border-purple-500" href={item.path}>
+                            {item.name}
+                        </Link>
+                      </li>
                 ))}
             </ul>
         </nav>

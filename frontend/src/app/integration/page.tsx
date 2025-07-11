@@ -28,14 +28,14 @@ const Integrations = () => {
 };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
+    <div className="p-6 w-full mx-auto bg-gradient-to-b from-primary-darker to-primary-200">
       <header className="mb-8">
-        <h1 className="text-2xl font-bold">Integrações</h1>
+        <h1 className="text-2xl font-bold text-purple-400">Integrações</h1>
         <p className="text-gray-400 mt-1">Configure suas integrações para automatizar o atendimento</p>
       </header>
 
       {/* WhatsApp Card */}
-      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-6 mb-6">
+      <div className="bg-zinc-900 text-white border border-zinc-800 rounded-xl p-6 mb-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
@@ -154,7 +154,8 @@ const Integrations = () => {
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">WhatsApp Conectado!</h3>
             <p className="text-gray-400 mb-4">Sua integração está ativa. {businessName && `Negócio: ${businessName}`}</p>
-            <button onClick={() => setIsConnected(false)} className="border border-gray-600 text-gray-300 py-2 px-4 rounded hover:bg-gray-800">
+            <button onClick={() => setIsConnected(false)} className="border cursor-pointer border-gray-600 text-gray-300 py-2
+             px-4 rounded hover:bg-gray-800">
               Reconfigurar
             </button>
           </div>
