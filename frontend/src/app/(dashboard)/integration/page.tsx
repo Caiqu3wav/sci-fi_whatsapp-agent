@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useState } from 'react';
-import { ExternalLink, CheckCircle, AlertCircle, Copy, Eye, EyeOff, MessageSquare, Shield, Zap } from 'lucide-react';
-import { useToast } from '@/hooks/useToast';
+import React, { useState } from 'react'
+import { ExternalLink, CheckCircle, AlertCircle, Copy, Eye, EyeOff, MessageSquare, Shield, Zap } from 'lucide-react'
+import { useToast } from '@/hooks/useToast'
+import { useSession } from 'next-auth/react'
 
 const Integrations = () => {
   const [whatsappToken, setWhatsappToken] = useState('');
@@ -11,24 +12,56 @@ const Integrations = () => {
   const [showToken, setShowToken] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
   const { toast } = useToast();
-
-  const handleSaveIntegration = () => {
-  if (!whatsappToken || !phoneNumberId) {
-    toast.error('Preencha o token e o ID do número de telefone')
-    return;
-  }
-
-  setIsConnected(true);
-  toast.success('WhatsApp conectado com sucesso!');
-};
+  const { data: session } = useSession();
 
   const copyToClipboard = (text: string) => {
   navigator.clipboard.writeText(text);
   toast('URL copiada para a área de transferência');
 };
 
+const handleSaveIntegration = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!whatsappToken || !phoneNumberId || !businessName) {
+    toast.error('Preencha todos os campos');
+    return;
+  } else if (whatsappToken.length !== 256) {
+    toast.error('Token do WhatsApp inválido');
+    return;
+  } else if (phoneNumberId.length !== 18) {
+    toast.error('ID do número de telefone inválido');
+    return;
+  }
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_API_URL}/api/integration/whatsapp`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_id: session?.user.id,
+          whatsapp_token: whatsappToken,
+          phone_number_id: phoneNumberId,
+          business_name: businessName,
+        }),
+      });
+
+      if (res.ok) {
+        setIsConnected(true);
+        toast.success('WhatsApp conectado com sucesso!');
+      } else {
+        toast.error('Erro ao salvar integração');
+      }
+
+    } catch(err) {
+      console.error("Error registering user integration", err)
+      toast.error("Error registering user integration");
+    }
+  };
+
   return (
-    <div className="p-6 w-full mx-auto bg-gradient-to-b from-primary-darker to-primary-200">
+    <div className="p-6 w-full bg-gradient-to-b from-primary-darker to-primary-200">
       <header className="mb-8">
         <h1 className="text-2xl font-bold text-purple-400">Integrações</h1>
         <p className="text-gray-400 mt-1">Configure suas integrações para automatizar o atendimento</p>
